@@ -8,6 +8,12 @@ namespace EvolutionSimulator
 {
     class GameUpdate : AbstractAsynchronousUpdate
     {
+        private World world;
+        public GameUpdate(World world)
+        {
+            this.world = world;
+        }
+
         public int UpdateTick { get; private set; }
         public int FrameTick { get; private set; }
 
@@ -19,6 +25,7 @@ namespace EvolutionSimulator
         protected override void Update()
         {
             UpdateTick++;
+            world.Update();
         }
     }
 }
