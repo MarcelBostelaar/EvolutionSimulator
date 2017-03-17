@@ -18,8 +18,8 @@ namespace EvolutionSimulator
         protected override void Initialize()
         {
             base.Initialize();
-            GameWorld = new World(10);
-            update = new GameUpdate(GameWorld);
+            GameWorld = new World(100);
+            update = new GameUpdate(GameWorld, this);
         }
         SpriteFont FontDefault;
         Texture2D SingleWhitePixel;
@@ -64,7 +64,7 @@ namespace EvolutionSimulator
                 for (int y = 0; y < GameWorld.size; y++)
                 {
                     spriteBatch.Draw(SingleWhitePixel, new Rectangle(new Point(x * spacing, y * spacing), new Point(spacing)), GameWorld.GetTile(x, y).Color);
-                    spriteBatch.DrawString(FontDefault, GameWorld.GetTile(x, y).food.ToString(), new Vector2(x * spacing, y * spacing), Color.White);
+                    spriteBatch.DrawString(FontDefault, GameWorld.GetTile(x, y).food.ToString(), new Vector2(x * spacing, y * spacing), Color.Black);
                 }
             }
 

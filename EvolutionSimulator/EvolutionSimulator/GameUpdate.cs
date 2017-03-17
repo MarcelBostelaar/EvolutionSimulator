@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 
 namespace EvolutionSimulator
 {
     class GameUpdate : AbstractAsynchronousUpdate
     {
         private World world;
-        public GameUpdate(World world)
+        public GameUpdate(World world, Game game) : base(game)
         {
             this.world = world;
         }

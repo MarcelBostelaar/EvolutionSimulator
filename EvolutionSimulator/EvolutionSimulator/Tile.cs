@@ -14,8 +14,10 @@ namespace EvolutionSimulator
             food = 0;
             this.maxfood = maxfood;
             this.regrowRate = regrowRate;
-            hsv = new HSVColor(120, (double)maxfood / 9999.0, (double)food / (double)maxfood);
+            hsv = new HSVColor(360, (double)maxfood / 9999.0, (double)food / (double)maxfood);
+            Sleeping = false;
         }
+        public bool Sleeping { get; private set;  }
         public int food { get; private set; }
         public int maxfood { get; private set; }
         public int regrowRate { get; private set; }
@@ -31,6 +33,7 @@ namespace EvolutionSimulator
             if (food > maxfood)
             {
                 food = maxfood;
+                Sleeping = true;
             }
             hsv.Value = (double)food / (double)maxfood;
         }

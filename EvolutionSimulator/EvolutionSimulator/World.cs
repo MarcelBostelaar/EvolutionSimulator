@@ -10,6 +10,7 @@ namespace EvolutionSimulator
     {
         public World(int size)
         {
+            this.Active = new LinkedList<Tuple<int, int>>();
             this.size = size;
             var random = new Random((int)DateTime.Now.ToFileTime());
             Tiles = new Tile[size, size];
@@ -18,6 +19,7 @@ namespace EvolutionSimulator
                 for (int y = 0; y < size; y++)
                 {
                     Tiles[x, y] = new Tile(random.Next(100, 9999), random.Next(1, 10));
+                    Active.AddFirst(new Tuple<int, int>(x, y));
                 }
             }
         }
@@ -31,14 +33,31 @@ namespace EvolutionSimulator
 
         public void Update()
         {
-            for (int x = 0; x < size; x++)
+            var currnode = Active.First;
+            while (currnode != null)
             {
-                for (int y = 0; y < size; y++)
+                Tiles[currnode.Value.Item1, currnode.Value.Item2].Update();
+                if (Tiles[currnode.Value.Item1, currnode.Value.Item2].Sleeping)
                 {
-                    Tiles[x, y].Update();
+                    var temp = currnode.Value;
+                    currnode = currnode.Next;
+                    Active.Remove(temp);
+                }
+                else
+                {
+                    currnode = currnode.Next;
                 }
             }
+            //for (int x = 0; x < size; x++)
+            //{
+            //    for (int y = 0; y < size; y++)
+            //    {
+            //        Tiles[x, y].Update();
+            //    }
+            //}
         }
+        LinkedList<Tuple<int, int>> Active;
+
 
         Tile[,] Tiles;
         //creatures list

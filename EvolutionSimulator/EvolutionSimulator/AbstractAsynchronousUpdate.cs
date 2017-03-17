@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using Microsoft.Xna.Framework;
 
 namespace EvolutionSimulator
 {
@@ -13,9 +14,15 @@ namespace EvolutionSimulator
         /// </summary>
         public bool ThreadIsRunning { get; private set; }
 
-        public AbstractAsynchronousUpdate()
+        public AbstractAsynchronousUpdate(Game game)
         {
             ThreadIsRunning = false;
+            game.Exiting += Game_Exiting;
+        }
+
+        private void Game_Exiting(object sender, System.EventArgs e)
+        {
+            this.StopThread();
         }
 
         /// <summary>
