@@ -8,6 +8,6 @@ namespace EvolutionSimulator
 {
     interface IUpdateable
     {
-        void Update(int Tick);
+        void Update(ulong Tick);
     }
 }

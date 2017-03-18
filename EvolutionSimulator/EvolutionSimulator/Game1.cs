@@ -20,6 +20,7 @@ namespace EvolutionSimulator
             base.Initialize();
             GameWorld = new World(100, 0);
             update = new GameUpdate(GameWorld, this);
+            update.StartThread();
         }
         SpriteFont FontDefault;
         Texture2D SingleWhitePixel;
@@ -60,8 +61,6 @@ namespace EvolutionSimulator
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
-            //spriteBatch.DrawString(FontDefault, "Update #" + update.UpdateTick, Vector2.Zero, Color.White);
-            //spriteBatch.DrawString(FontDefault, "Frame #" + update.FrameTick, new Vector2(0, 20), Color.White);
 
             for (int x = 0; x < GameWorld.size; x++)
             {
@@ -71,7 +70,9 @@ namespace EvolutionSimulator
                     spriteBatch.DrawString(FontDefault, GameWorld.GetTile(x, y).food.ToString(), new Vector2(x * spacing, y * spacing), Color.Black);
                 }
             }
-
+            spriteBatch.Draw(SingleWhitePixel, new Rectangle(0, 0, 200, 200), Color.White);
+            spriteBatch.DrawString(FontDefault, "Update #" + update.UpdateTick, Vector2.Zero, Color.Black);
+            spriteBatch.DrawString(FontDefault, "Frame #" + update.FrameTick, new Vector2(0, 20), Color.Black);
             spriteBatch.End();
 
             base.Draw(gameTime);
