@@ -20,6 +20,7 @@ namespace EvolutionSimulator
             base.Initialize();
             GameWorld = new World(100, 0);
             update = new GameUpdate(GameWorld, this);
+            update.StartThread();
         }
         SpriteFont FontDefault;
         Texture2D SingleWhitePixel;
