@@ -46,6 +46,10 @@ namespace EvolutionSimulator
             {
                 update.StopThread();
             }
+            if (state.IsKeyDown(Keys.Z))
+            {
+                update.StartThread(1000);
+            }
             update.Invoke();
             base.Update(gameTime);
         }

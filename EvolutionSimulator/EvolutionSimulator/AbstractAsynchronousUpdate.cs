@@ -49,6 +49,20 @@ namespace EvolutionSimulator
             }
         }
         /// <summary>
+        /// Starts the maximum speed update thread if none is already running, for a specified amount of loops.
+        /// </summary>
+        /// <param name="loopsAmount">A specified amount of loops to run.</param>
+        public void StartThread(int loopsAmount)
+        {
+            if (!ThreadIsRunning)
+            {
+                UpdateThread = new Thread(new ThreadStart(() => LoopUpdate(loopsAmount)));
+                UpdateThread.Start();
+                ThreadIsRunning = true;
+            }
+        }
+
+        /// <summary>
         /// Stops the maximum speed update thread if one is currently running. Thread will stop at the end of a full update call.
         /// </summary>
         public void StopThread()
@@ -57,7 +71,6 @@ namespace EvolutionSimulator
             {
                 DoLoop = false;
                 UpdateThread.Join();
-                ThreadIsRunning = false;
             }
         }
 
@@ -69,6 +82,18 @@ namespace EvolutionSimulator
             {
                 Update();
             }
+            ThreadIsRunning = false;
+        }
+        private void LoopUpdate(int Loops)
+        {
+            DoLoop = true;
+            int count = 0;
+            while (DoLoop && count < Loops)
+            {
+                Update();
+                count++;
+            }
+            ThreadIsRunning = false;
         }
         protected abstract void Update();
     }
