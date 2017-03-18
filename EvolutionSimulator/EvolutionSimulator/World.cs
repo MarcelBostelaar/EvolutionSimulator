@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace EvolutionSimulator
 {
-    class World
+    class World : IUpdateable
     {
-        public World(int size)
+        public World(int size, int CurrTick)
         {
-            this.Active = new LinkedList<Tuple<int, int>>();
+            this.UpdateSchedule = new LinkedList<Tuple<int, Tile>>();
             this.size = size;
             var random = new Random((int)DateTime.Now.ToFileTime());
             Tiles = new Tile[size, size];
@@ -18,8 +18,8 @@ namespace EvolutionSimulator
             {
                 for (int y = 0; y < size; y++)
                 {
-                    Tiles[x, y] = new Tile(random.Next(100, 9999), random.Next(1, 10));
-                    Active.AddFirst(new Tuple<int, int>(x, y));
+                    Tiles[x, y] = new Tile(random.Next(100, 9999), random.Next(1, 10), CurrTick);
+                    AddUpdateInOrder(Tiles[x, y].GetPlannedUpdate(), Tiles[x, y]);
                 }
             }
         }
@@ -31,32 +31,70 @@ namespace EvolutionSimulator
             return Tiles[x, y];
         }
 
-        public void Update()
+        //public void Update()
+        //{
+        //    //var currnode = Active.First;
+        //    //while (currnode != null)
+        //    //{
+        //    //    Tiles[currnode.Value.Item1, currnode.Value.Item2].Update();
+        //    //    if (Tiles[currnode.Value.Item1, currnode.Value.Item2].Sleeping)
+        //    //    {
+        //    //        var temp = currnode.Value;
+        //    //        currnode = currnode.Next;
+        //    //        Active.Remove(temp);
+        //    //    }
+        //    //    else
+        //    //    {
+        //    //        currnode = currnode.Next;
+        //    //    }
+        //    //}
+        //    //for (int x = 0; x < size; x++)
+        //    //{
+        //    //    for (int y = 0; y < size; y++)
+        //    //    {
+        //    //        Tiles[x, y].Update();
+        //    //    }
+        //    //}
+        //}
+
+        private void AddUpdateInOrder(int Tick, Tile tile)
         {
-            var currnode = Active.First;
-            while (currnode != null)
+            var currnode = UpdateSchedule.First;
+            while(currnode != null)
             {
-                Tiles[currnode.Value.Item1, currnode.Value.Item2].Update();
-                if (Tiles[currnode.Value.Item1, currnode.Value.Item2].Sleeping)
+                if(currnode.Value.Item1 >= Tick)
                 {
-                    var temp = currnode.Value;
-                    currnode = currnode.Next;
-                    Active.Remove(temp);
+                    UpdateSchedule.AddBefore(currnode, new Tuple<int, Tile>(Tick, tile));
+                    return;
                 }
                 else
                 {
                     currnode = currnode.Next;
                 }
             }
-            //for (int x = 0; x < size; x++)
-            //{
-            //    for (int y = 0; y < size; y++)
-            //    {
-            //        Tiles[x, y].Update();
-            //    }
-            //}
+            UpdateSchedule.AddLast(new Tuple<int, Tile>(Tick, tile));
         }
-        LinkedList<Tuple<int, int>> Active;
+
+        public void Update(int Tick)
+        {
+            var currnode = UpdateSchedule.First;
+            while(currnode != null)
+            {
+                if(currnode.Value.Item1 <= Tick)
+                {
+                    currnode.Value.Item2.Update(Tick);
+                    var lastnode = currnode;
+                    currnode = currnode.Next;
+                    UpdateSchedule.Remove(lastnode);
+                }
+                else
+                {
+                    return;
+                }
+            }
+        }
+
+        LinkedList<Tuple<int, Tile>> UpdateSchedule;
 
 
         Tile[,] Tiles;

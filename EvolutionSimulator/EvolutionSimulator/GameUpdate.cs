@@ -26,7 +26,7 @@ namespace EvolutionSimulator
         protected override void Update()
         {
             UpdateTick++;
-            world.Update();
+            world.Update(UpdateTick);
         }
     }
 }

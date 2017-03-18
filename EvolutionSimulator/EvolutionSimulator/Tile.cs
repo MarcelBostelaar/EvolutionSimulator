@@ -7,33 +7,50 @@ using System.Threading.Tasks;
 
 namespace EvolutionSimulator
 {
-    class Tile
+    class Tile : IUpdateable
     {
-        public Tile(int maxfood, int regrowRate)
+        public Tile(int maxfood, int regrowRate, int CurrTick)
         {
             food = 0;
             this.maxfood = maxfood;
             this.regrowRate = regrowRate;
             hsv = new HSVColor(360, (double)maxfood / 9999.0, (double)food / (double)maxfood);
-            Sleeping = false;
+            IsFullFood = false;
+
+            tickFoodOffset = regrowRate * CurrTick - food;
         }
-        public bool Sleeping { get; private set;  }
         public int food { get; private set; }
         public int maxfood { get; private set; }
         public int regrowRate { get; private set; }
-        public Color Color {
-            get {
-                return hsv.ToARGBColor();
-            }
+
+        private int tickFoodOffset;
+
+        private bool IsFullFood;
+
+        private void RecalculateRegrow(int Tick)
+        {
+            tickFoodOffset = regrowRate * Tick - food;
+        }
+        public Color getColor(int Tick)
+        {
+            if(!IsFullFood)
+                this.Update(Tick);
+            return this.hsv.ToARGBColor();
         }
         HSVColor hsv;
-        public void Update()
+
+        public int GetPlannedUpdate()
         {
-            food += regrowRate;
-            if (food > maxfood)
+            return (maxfood + tickFoodOffset) / regrowRate + 1;
+        }
+
+        public void Update(int Tick)
+        {
+            food = regrowRate * Tick - tickFoodOffset;
+            if(food >= maxfood)
             {
                 food = maxfood;
-                Sleeping = true;
+                IsFullFood = true;
             }
             hsv.Value = (double)food / (double)maxfood;
         }
