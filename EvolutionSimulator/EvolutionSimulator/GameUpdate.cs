@@ -15,8 +15,8 @@ namespace EvolutionSimulator
             this.world = world;
         }
 
-        public int UpdateTick { get; private set; }
-        public int FrameTick { get; private set; }
+        public ulong UpdateTick { get; private set; }
+        public ulong FrameTick { get; private set; }
 
         public void incrementFramtick()
         {

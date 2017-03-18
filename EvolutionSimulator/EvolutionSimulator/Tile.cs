@@ -9,7 +9,7 @@ namespace EvolutionSimulator
 {
     class Tile : IUpdateable
     {
-        public Tile(int maxfood, int regrowRate, int CurrTick)
+        public Tile(ulong maxfood, ulong regrowRate, ulong CurrTick)
         {
             food = 0;
             this.maxfood = maxfood;
@@ -17,21 +17,21 @@ namespace EvolutionSimulator
             hsv = new HSVColor(360, (double)maxfood / 9999.0, (double)food / (double)maxfood);
             IsFullFood = false;
 
-            tickFoodOffset = regrowRate * CurrTick - food;
+            RecalculateRegrow(CurrTick);
         }
-        public int food { get; private set; }
-        public int maxfood { get; private set; }
-        public int regrowRate { get; private set; }
+        public ulong food { get; private set; }
+        public ulong maxfood { get; private set; }
+        public ulong regrowRate { get; private set; }
 
-        private int tickFoodOffset;
+        private ulong tickFoodOffset;
 
         private bool IsFullFood;
 
-        private void RecalculateRegrow(int Tick)
+        private void RecalculateRegrow(ulong Tick)
         {
-            tickFoodOffset = regrowRate * Tick - food;
+            tickFoodOffset = (ulong)regrowRate * Tick - (ulong)food;
         }
-        public Color getColor(int Tick)
+        public Color getColor(ulong Tick)
         {
             if(!IsFullFood)
                 this.Update(Tick);
@@ -39,12 +39,7 @@ namespace EvolutionSimulator
         }
         HSVColor hsv;
 
-        public int GetPlannedUpdate()
-        {
-            return (maxfood + tickFoodOffset) / regrowRate + 1;
-        }
-
-        public void Update(int Tick)
+        public void Update(ulong Tick)
         {
             food = regrowRate * Tick - tickFoodOffset;
             if(food >= maxfood)
