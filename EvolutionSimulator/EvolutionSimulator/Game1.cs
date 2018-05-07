@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace EvolutionSimulator
 {
@@ -15,12 +16,22 @@ namespace EvolutionSimulator
             Content.RootDirectory = "Content";
         }
         
+        private void Window_ClientSizeChanged(object sender, EventArgs e)
+        {
+            if(!(graphics.PreferredBackBufferWidth == Window.ClientBounds.Width && graphics.PreferredBackBufferHeight == Window.ClientBounds.Height)){
+                graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
+                graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
+                graphics.ApplyChanges();
+            }
+        }
+
         protected override void Initialize()
         {
             base.Initialize();
-            GameWorld = new World(100, 0);
-            update = new GameUpdate(GameWorld, this);
-            update.StartThread();
+
+            this.IsMouseVisible = true;
+            this.Window.AllowUserResizing = true;
+            this.Window.ClientSizeChanged += new EventHandler<EventArgs>(Window_ClientSizeChanged);
         }
         SpriteFont FontDefault;
         Texture2D SingleWhitePixel;
@@ -34,48 +45,32 @@ namespace EvolutionSimulator
         protected override void UnloadContent()
         {
         }
-        World GameWorld;
-        GameUpdate update;
         protected override void Update(GameTime gameTime)
         {
             var state = Keyboard.GetState();
-            if (state.IsKeyDown(Keys.Space))
-            {
-                update.StartThread();
-            }
-            if (state.IsKeyDown(Keys.S))
-            {
-                update.StopThread();
-            }
-            if (state.IsKeyDown(Keys.Z))
-            {
-                update.StartThread(1000);
-            }
-            update.Invoke();
+            
             base.Update(gameTime);
         }
-        const int spacing = 40;
         protected override void Draw(GameTime gameTime)
         {
-            update.incrementFramtick();
+
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
-
-            for (int x = 0; x < GameWorld.size; x++)
-            {
-                for (int y = 0; y < GameWorld.size; y++)
-                {
-                    spriteBatch.Draw(SingleWhitePixel, new Rectangle(new Point(x * spacing, y * spacing), new Point(spacing)), GameWorld.GetTile(x, y).getColor(update.UpdateTick));
-                    spriteBatch.DrawString(FontDefault, GameWorld.GetTile(x, y).food.ToString(), new Vector2(x * spacing, y * spacing), Color.Black);
-                }
-            }
-            spriteBatch.Draw(SingleWhitePixel, new Rectangle(0, 0, 200, 200), Color.White);
-            spriteBatch.DrawString(FontDefault, "Update #" + update.UpdateTick, Vector2.Zero, Color.Black);
-            spriteBatch.DrawString(FontDefault, "Frame #" + update.FrameTick, new Vector2(0, 20), Color.Black);
             spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+
+        const int spacing = 40;
+        private void DrawBoard()
+        {
+            GraphicsDevice.Clear(Color.White);
+
+            spriteBatch.Begin();
+
+            spriteBatch.End();
         }
     }
 }
